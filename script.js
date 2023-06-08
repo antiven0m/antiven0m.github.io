@@ -1,62 +1,54 @@
-const weatherCodeDescriptions = {
-    0: "Clear sky",
-    1: "Mainly clear",
-    2: "Partly cloudy",
-    3: "Overcast",
-    45: "Fog",
-    48: "Depositing rime fog",
-    51: "Drizzle: Light",
-    53: "Drizzle: Moderate",
-    55: "Drizzle: Dense intensity",
-    56: "Freezing Drizzle: Light",
-    57: "Freezing Drizzle: Dense intensity",
-    61: "Rain: Slight",
-    63: "Rain: Moderate",
-    65: "Rain: Heavy intensity",
-    66: "Freezing Rain: Light",
-    67: "Freezing Rain: Heavy intensity",
-    71: "Snow fall: Slight",
-    73: "Snow fall: Moderate",
-    75: "Snow fall: Heavy intensity",
-    77: "Snow grains",
-    80: "Rain showers: Slight",
-    81: "Rain showers: Moderate",
-    82: "Rain showers: Violent",
-    85: "Snow showers slight",
-    86: "Snow showers heavy",
-    95: "Thunderstorm: Slight or moderate",
-    96: "Thunderstorm with slight hail",
-    99: "Thunderstorm with heavy hail"
+const apiUrl = 'https://www.doomworld.com/idgames/api/api.php';
+
+function makeRequest(action, parameters, callback) {
+  const url = `${apiUrl}?action=${action}&out=json${parameters}`;
+  const xhr = new XMLHttpRequest();
+
+  xhr.onreadystatechange = function () {
+    if (xhr.readyState === 4 && xhr.status === 200) {
+      const data = JSON.parse(xhr.responseText);
+      callback(data);
+    }
   };
-  
-  async function getWeatherData(latitude, longitude) {
-    const url = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&hourly=temperature_2m,relativehumidity_2m,apparent_temperature,precipitation_probability,precipitation,rain,showers,snowfall,weathercode`;
-  
-    try {
-      const response = await fetch(url);
-      const data = await response.json();
-      return data;
-    } catch (error) {
-      console.error("Error fetching weather data:", error);
+
+  xhr.open('GET', url, true);
+  xhr.send();
+}
+
+function displayDirectories(directories) {
+  const directoryList = document.getElementById('directory-list');
+  directoryList.innerHTML = '';
+
+  directories.forEach((directory) => {
+    const listItem = document.createElement('li');
+    listItem.textContent = directory.name;
+    directoryList.appendChild(listItem);
+  });
+}
+
+function displayFiles(files) {
+  const fileList = document.getElementById('file-list');
+  fileList.innerHTML = '';
+
+  files.forEach((file) => {
+    const listItem = document.createElement('li');
+    listItem.textContent = file.title;
+    fileList.appendChild(listItem);
+  });
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+  makeRequest('getdirs', '', function (data) {
+    if (data && data.content && data.content.dir) {
+      const directories = data.content.dir;
+      displayDirectories(directories);
     }
-  }
-  
-  function getLocation() {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(async (position) => {
-        const latitude = position.coords.latitude;
-        const longitude = position.coords.longitude;
-  
-        document.getElementById("latitude").innerHTML = latitude;
-        document.getElementById("longitude").innerHTML = longitude;
-  
-        const weatherData = await getWeatherData(latitude, longitude);
-        const weatherCode = weatherData.hourly.weathercode[0];
-  
-        document.getElementById("weather").innerHTML = weatherCodeDescriptions[weatherCode];
-      });
-    } else {
-      alert("Geolocation is not supported by this browser.");
+  });
+
+  makeRequest('getfiles', '', function (data) {
+    if (data && data.content && data.content.file) {
+      const files = data.content.file;
+      displayFiles(files);
     }
-  }
-  
+  });
+});

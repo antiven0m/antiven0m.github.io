@@ -1,19 +1,26 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Weather Forecast</title>
-  <link rel="stylesheet" href="styles.css">
+  <title>Static File Explorer</title>
+  <link rel="stylesheet" type="text/css" href="style.css">
 </head>
 <body>
-  <div class="container">
-    <h1>Weather Forecast</h1>
-    <p>Latitude: <span id="latitude"></span></p>
-    <p>Longitude: <span id="longitude"></span></p>
-    <p>Weather: <span id="weather"></span></p>
-    <button onclick="getLocation()">Get Weather</button>
+  <h1>Static File Explorer</h1>
+  <div class="file-explorer">
+    <div class="directories">
+      <h2>Directories</h2>
+      <ul id="directory-list">
+        <!-- Directory items will be added dynamically -->
+      </ul>
+    </div>
+    <div class="files">
+      <h2>Files</h2>
+      <ul id="file-list">
+        <!-- File items will be added dynamically -->
+      </ul>
+    </div>
   </div>
-  <script src="scripts.js"></script>
+
+  <script src="script.js"></script>
 </body>
 </html>
